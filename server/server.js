@@ -11,6 +11,7 @@ app.use(express.json());
 
 const CHAPA_URL = "https://api.chapa.co/v1/transaction/initialize";
 const CHAPA_AUTH = process.env.CHAPA_AUTH;
+const CHAPA_BANKS = "https://api.chapa.co/v1/banks";
 
 const config = {
   headers: {
@@ -58,6 +59,18 @@ app.get("/api/verify-payment/:id", async (req, res) => {
   } catch (err) {
     console.log("Verification error:", err.response?.data || err.message);
     res.status(500).json({ error: "Verification failed" });
+  }
+});
+
+// get all chapa banks
+
+app.get("/api/banks", async (req, res) => {
+  try {
+    const response = await axios.get(CHAPA_BANKS, config);
+    res.json(response.data);
+  } catch (err) {
+    console.log("Error fetching banks:", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to fetch banks" });
   }
 });
 

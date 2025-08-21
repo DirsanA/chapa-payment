@@ -6,13 +6,12 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 4400;
 
-app.use(cors()); // allow frontend to call API
+app.use(cors());
 app.use(express.json());
 
 const CHAPA_URL = "https://api.chapa.co/v1/transaction/initialize";
-const CHAPA_AUTH = process.env.CHAPA_AUTH; // from .env
+const CHAPA_AUTH = process.env.CHAPA_AUTH;
 
-// Headers with chapa secret key
 const config = {
   headers: {
     Authorization: `Bearer ${CHAPA_AUTH}`,
@@ -20,20 +19,21 @@ const config = {
   },
 };
 
-// Payment initialization
+// Payment initialization (dynamic data from frontend)
 app.post("/api/pay", async (req, res) => {
-  const RETURN_URL = "http://localhost:5173/success"; // React success page
+  const { amount, email, first_name, last_name } = req.body;
+
+  const RETURN_URL = "http://localhost:5173/success";
   const CALLBACK_URL = "http://localhost:4400/api/verify-payment/";
 
-  // Unique reference
   const TEXT_REF = "tx-" + Date.now();
 
   const data = {
-    amount: "100",
+    amount,
     currency: "ETB",
-    email: "ato@ekele.com",
-    first_name: "Ato",
-    last_name: "Ekele",
+    email,
+    first_name,
+    last_name,
     tx_ref: TEXT_REF,
     callback_url: CALLBACK_URL + TEXT_REF,
     return_url: RETURN_URL,
@@ -48,7 +48,6 @@ app.post("/api/pay", async (req, res) => {
   }
 });
 
-// Verify payment
 app.get("/api/verify-payment/:id", async (req, res) => {
   try {
     const response = await axios.get(

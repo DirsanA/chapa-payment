@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 4400;
 app.use(cors());
 app.use(express.json());
 
+const CHAPA_Transactions = "https://api.chapa.co/v1/transfers";
 const CHAPA_URL = "https://api.chapa.co/v1/transaction/initialize";
 const CHAPA_AUTH = process.env.CHAPA_AUTH;
 const CHAPA_BANKS = "https://api.chapa.co/v1/banks";
@@ -48,6 +49,15 @@ app.post("/api/pay", async (req, res) => {
     res.status(500).json({ error: "Payment initialization failed" });
   }
 });
+
+app.get("/api/transactions", async (req, res)=>{
+  try {
+    const response=await axios.get(CHAPA_Transactions, config)
+    res.json(response.data)
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 app.get("/api/verify-payment/:id", async (req, res) => {
   try {

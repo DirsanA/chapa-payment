@@ -64,7 +64,7 @@ app.get("/api/verify-payment/:id", async (req, res) => {
 
 // get all chapa banks
 
-app.get("/api/banks", async (req, res) => {
+app.get("/api/banks", async function (req, res) {
   try {
     const response = await axios.get(CHAPA_BANKS, config);
     res.json(response.data);
